@@ -1,11 +1,11 @@
-import { defineCommand, runMain } from "citty";
 import assert from "node:assert";
-import path from "path";
-import ezSpawn from "@jsdevtools/ez-spawn";
+import path from "node:path";
 import { createHash } from "node:crypto";
+import fsSync from "node:fs";
+import fs from "node:fs/promises";
 import { hash } from "ohash";
-import fsSync from "fs";
-import fs from "fs/promises";
+import ezSpawn from "@jsdevtools/ez-spawn";
+import { defineCommand, runMain } from "citty";
 import { detect } from "package-manager-detector";
 import { getPackageManifest, type PackageManifest } from "query-registry";
 import type { Comment } from "@pkg-pr-new/utils";
@@ -17,9 +17,9 @@ import {
 import { glob } from "tinyglobby";
 import ignore from "ignore";
 import "./environments";
-import pkg from "./package.json" with { type: "json" };
 import { isBinaryFile } from "isbinaryfile";
 import { readPackageJSON, writePackageJSON } from "pkg-types";
+import pkg from "./package.json" with { type: "json" };
 import { createDefaultTemplate } from "./template";
 
 declare global {
@@ -87,7 +87,7 @@ const main = defineCommand({
           },
         },
         run: async ({ args }) => {
-          const paths = args._.length
+          const paths = args._.length > 0
             ? await glob(args._, {
                 expandDirectories: false,
                 onlyDirectories: true,
@@ -152,7 +152,9 @@ const main = defineCommand({
 
           const key = hash(metadata);
 
-          const checkResponse = await fetch(new URL("/check", apiUrl), {
+          const url = new URL("/check", apiUrl)
+          
+          const checkResponse = await fetch(url, {
             method: "POST",
             body: JSON.stringify({
               owner,
@@ -160,7 +162,6 @@ const main = defineCommand({
               key,
             }),
           });
-
           if (!checkResponse.ok) {
             console.error(await checkResponse.text());
             process.exit(1);
@@ -423,7 +424,7 @@ async function resolveTarball(pm: "npm" | "pnpm", p: string) {
     cwd: p,
   });
   const lines = stdout.split("\n").filter(Boolean);
-  const filename = lines[lines.length - 1].trim();
+  const filename = lines.at(-1).trim();
 
   const shasum = createHash("sha1")
     .update(await fs.readFile(path.resolve(p, filename)))
@@ -438,7 +439,7 @@ async function writeDeps(
   realDeps: Map<string, string> | null,
 ) {
   const pJsonPath = path.resolve(p, "package.json");
-  const content = await fs.readFile(pJsonPath, "utf-8");
+  const content = await fs.readFile(pJsonPath, "utf8");
 
   const pJson = await readPackageJSON(pJsonPath);
 

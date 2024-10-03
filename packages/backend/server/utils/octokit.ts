@@ -4,6 +4,7 @@ import { App } from "../../vendor/octokit.build.mjs";
 
 export function useOctokitApp(event: H3Event): AppType {
   const { appId, privateKey, webhookSecret } = useRuntimeConfig(event);
+  console.log({ appId, privateKey, webhookSecret });
 
   return new App({
     appId,
@@ -17,8 +18,8 @@ export async function useOctokitInstallation(event: H3Event, owner: string, repo
   const { data: installationData } = await app.octokit.request(
     "GET /repos/{owner}/{repo}/installation",
     {
-      owner: owner,
-      repo: repo,
+      owner,
+      repo,
     },
   );
 

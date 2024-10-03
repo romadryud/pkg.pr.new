@@ -1,7 +1,7 @@
 import type { PullRequestEvent } from "@octokit/webhooks-types";
 import type { HandlerFunction } from "@octokit/webhooks/dist-types/types";
-import type { PullRequestData, WorkflowData } from "../types";
 import { hash } from "ohash";
+import type { PullRequestData, WorkflowData } from "../types";
 
 // mark a PR as a PR :)
 const prMarkEvents: PullRequestEvent["action"][] = [
@@ -92,12 +92,11 @@ export default eventHandler(async (event) => {
     const cursorKey = `${baseKey}:${payload.ref}`;
 
     await cursorBucket.removeItem(cursorKey);
-  }
-  
+  };
 
   app.webhooks.on("workflow_run", workflowHandler);
   app.webhooks.on("pull_request", pullRequestHandler);
-  app.webhooks.on("delete", branchDeletionHandler)
+  app.webhooks.on("delete", branchDeletionHandler);
   // TODO: create branch cursors on create
   // app.webhooks.on("create", branchDeletionHandler)
 
@@ -115,8 +114,8 @@ export default eventHandler(async (event) => {
     if (test) {
       // TODO: fix typing with infer
       await app.webhooks.receive({
-        id: id,
-        name: name,
+        id,
+        name,
         payload: JSON.parse(payload),
       } as any);
     } else {

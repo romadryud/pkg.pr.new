@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "moduleResolution": "NodeNext",
+    "module": "NodeNext",
+    "types": ["vitest/globals"],
+    "resolveJsonModule": true
+  }
+}

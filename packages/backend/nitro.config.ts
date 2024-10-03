@@ -26,11 +26,11 @@ export default defineNitroConfig({
   modules: [ncb],
   srcDir: "server",
   runtimeConfig: {
-    appId: "",
-    webhookSecret: "",
-    privateKey: "",
-    rmStaleKey: "",
-    test: "",
+    appId: "123456789",
+    webhookSecret: "webhook-secret",
+    privateKey: "private-key",
+    rmStaleKey: "rm-stale-key",
+    test: true,
   },
   timing: true,
 });

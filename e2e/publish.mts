@@ -1,7 +1,7 @@
-import { exec } from "child_process";
-import { platform } from "os";
-import wp from "wait-port";
+import { exec } from "node:child_process";
+import { platform } from "node:os";
 import assert from "node:assert";
+import wp from "wait-port";
 import ezSpawn from "@jsdevtools/ez-spawn";
 import pushWorkflowRunInProgressFixture from "./fixtures/workflow_run.in_progress.json" with { type: "json" };
 import prWorkflowRunRequestedFixture from "./fixtures/pr.workflow_run.requested.json" with { type: "json" };
@@ -17,13 +17,13 @@ await ezSpawn.async(
   `pnpm cross-env TEST=true API_URL=${serverUrl.href} pnpm -w run build`,
   [],
   {
-    stdio: "inherit",
+    // stdio: "inherit",
     shell: true,
   },
 );
 
 ezSpawn.async("pnpm --filter=backend run preview", [], {
-  stdio: "inherit",
+  // stdio: "inherit",
   shell: true,
   signal: c.signal,
   killSignal: "SIGINT",
@@ -94,7 +94,7 @@ for (const [{ event, payload }, pr] of [
     const ref = pr?.payload.number ?? payload.workflow_run.head_branch;
     // install
     const playgroundShaUrl = new URL(
-      `/${owner}/${repo}/playground-a@${payload.workflow_run.head_sha.substring(0, 7)}`,
+      `/${owner}/${repo}/playground-a@${payload.workflow_run.head_sha.slice(0, 7)}`,
       serverUrl,
     );
     {
@@ -103,7 +103,10 @@ for (const [{ event, payload }, pr] of [
       });
 
       const playgroundShaBlob = await playgroundShaData.blob();
-      assert.ok(!!playgroundShaBlob.size, "playground size should not be zero");
+      assert.ok(
+        playgroundShaBlob.size > 0,
+        "playground size should not be zero",
+      );
       assert.equal(
         playgroundShaData.status,
         200,
@@ -142,7 +145,7 @@ for (const [{ event, payload }, pr] of [
     }
     {
       const playgroundBShaUrl = new URL(
-        `/${owner}/${repo}/playground-b@${payload.workflow_run.head_sha.substring(0, 7)}`,
+        `/${owner}/${repo}/playground-b@${payload.workflow_run.head_sha.slice(0, 7)}`,
         serverUrl,
       );
       playgroundBShaUrl.searchParams.set("id", Date.now().toString());
@@ -246,8 +249,8 @@ async function killPort() {
         killSignal: "SIGINT",
       });
     }
-  } catch (e) {
-    console.error(e);
+  } catch (error) {
+    console.error(error);
     c.abort();
     process.exit(1);
   } finally {
