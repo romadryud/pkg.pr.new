@@ -20,11 +20,11 @@ describe("publish", () => {
           request.body,
         );
       },
-    });  
-    
-    server.events.on('request:start', ({ request }) => {
-      console.log('MSW intercepted:', request.method, request.url)
-    })
+    });
+
+    server.events.on("request:start", ({ request }) => {
+      console.log("MSW intercepted:", request.method, request.url);
+    });
 
     return async () => {
       server.close();
@@ -136,7 +136,6 @@ async function run() {
   //     shell: true,
   //   },
   // );
-  
 
   ezSpawn.async("pnpm --filter=backend run preview", [], {
     stdio: "inherit",
