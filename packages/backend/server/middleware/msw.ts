@@ -9,6 +9,7 @@ const mswMiddleware = createMiddleware(
 );
 
 export default defineEventHandler(async (event) => {
+  console.log("siemanko");
   return new Promise((resolve) => {
     console.log("hello from worker ");
     // mswMiddleware(event.node.req, event.node.res, resolve);

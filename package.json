@@ -13,7 +13,7 @@
     "lint": "eslint --cache .",
     "typecheck": "tsc -p scripts --noEmit && pnpm -r --parallel run typecheck",
     "release": "tsx script/release.ts",
-    "test": "pnpm cross-env TEST=true API_URL=http://localhost:8788 pnpm -w run build &>/dev/null && pnpm vitest",
+    "test": "pnpm vitest",
     "test:e2e": "tsx e2e/publish.test.mts"
   },
   "keywords": [],
